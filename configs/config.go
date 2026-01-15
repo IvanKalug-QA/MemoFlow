@@ -12,7 +12,7 @@ type Config struct {
 }
 
 type PortConfig struct {
-	name string
+	Name string
 }
 
 func LoadConfig() *Config {
@@ -22,7 +22,7 @@ func LoadConfig() *Config {
 	}
 	return &Config{
 		Port: PortConfig{
-			name: os.Getenv("PORT"),
+			Name: os.Getenv("PORT"),
 		},
 	}
 }
