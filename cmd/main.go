@@ -3,6 +3,7 @@ package main
 import (
 	"memoflow/configs"
 	"memoflow/internal/auth"
+	"memoflow/internal/memo"
 	"memoflow/pkg/db"
 	"net/http"
 )
@@ -16,7 +17,9 @@ func main() {
 		Handler: router,
 	}
 
+	// Handlers
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: config})
+	memo.NewMemoHandler(router, memo.MemoHandlerDeps{Config: config})
 
 	server.ListenAndServe()
 }
