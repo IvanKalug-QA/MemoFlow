@@ -2,16 +2,15 @@ package memo
 
 import (
 	"fmt"
-	"memoflow/configs"
 	"net/http"
 )
 
 type MemoHandlerDeps struct {
-	*configs.Config
+	MemoResository *MemoResository
 }
 
 type MemoHandler struct {
-	*configs.Config
+	MemoResository *MemoResository
 }
 
 func (m *MemoHandler) Create() http.HandlerFunc {
@@ -39,7 +38,7 @@ func (m *MemoHandler) Delete() http.HandlerFunc {
 }
 
 func NewMemoHandler(router *http.ServeMux, deps MemoHandlerDeps) {
-	handler := &MemoHandler{Config: deps.Config}
+	handler := &MemoHandler{MemoResository: deps.MemoResository}
 	router.HandleFunc("POST /memo", handler.Create())
 	router.HandleFunc("GET /memo", handler.Read())
 	router.HandleFunc("DELETE /memo/{id}", handler.Delete())

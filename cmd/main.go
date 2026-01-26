@@ -10,16 +10,19 @@ import (
 
 func main() {
 	config := configs.LoadConfig()
-	_ = db.NewDb(config)
+	db := db.NewDb(config)
 	router := http.NewServeMux()
 	server := http.Server{
 		Addr:    config.Port.Name,
 		Handler: router,
 	}
 
+	//Repository
+	memoRepository := memo.NewMemoRepository(db)
+
 	// Handlers
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{Config: config})
-	memo.NewMemoHandler(router, memo.MemoHandlerDeps{Config: config})
+	memo.NewMemoHandler(router, memo.MemoHandlerDeps{MemoResository: memoRepository})
 
 	server.ListenAndServe()
 }
