@@ -9,10 +9,20 @@ import (
 
 type Config struct {
 	Port PortConfig
+	Auth AuthConfig
+	Db   DbConfig
 }
 
 type PortConfig struct {
 	Name string
+}
+
+type AuthConfig struct {
+	Secret string
+}
+
+type DbConfig struct {
+	Dsn string
 }
 
 func LoadConfig() *Config {
@@ -23,6 +33,12 @@ func LoadConfig() *Config {
 	return &Config{
 		Port: PortConfig{
 			Name: os.Getenv("PORT"),
+		},
+		Auth: AuthConfig{
+			Secret: os.Getenv("TOKEN"),
+		},
+		Db: DbConfig{
+			Dsn: os.Getenv("DSN"),
 		},
 	}
 }
