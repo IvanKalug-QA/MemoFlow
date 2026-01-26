@@ -2,20 +2,32 @@ package memo
 
 import (
 	"fmt"
+	"memoflow/pkg/req"
+	"memoflow/pkg/res"
 	"net/http"
 )
 
 type MemoHandlerDeps struct {
-	MemoResository *MemoResository
+	MemoResository *MemoRepository
 }
 
 type MemoHandler struct {
-	MemoResository *MemoResository
+	MemoResository *MemoRepository
 }
 
 func (m *MemoHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Create")
+		body, err := req.HandleBody[MemoRequest](&w, r)
+		if err != nil {
+			return
+		}
+		memo := NewMemo(body)
+		createdMemo, err := m.MemoResository.Create(memo)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+		fmt.Println(createdMemo)
+		res.Json(w, createdMemo, http.StatusCreated)
 	}
 }
 

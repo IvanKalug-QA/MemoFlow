@@ -4,16 +4,20 @@ import (
 	"memoflow/pkg/db"
 )
 
-type MemoResository struct {
+type MemoRepository struct {
 	Database *db.Db
 }
 
-func NewMemoRepository(database *db.Db) *MemoResository {
-	return &MemoResository{
+func NewMemoRepository(database *db.Db) *MemoRepository {
+	return &MemoRepository{
 		Database: database,
 	}
 }
 
-func (repo *MemoResository) Create(link *Memo) {
-
+func (repo *MemoRepository) Create(memo *Memo) (*Memo, error) {
+	result := repo.Database.DB.Create(memo)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return memo, nil
 }

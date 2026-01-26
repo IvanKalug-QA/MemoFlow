@@ -7,3 +7,10 @@ type Memo struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+func NewMemo(body *MemoRequest) *Memo {
+	return &Memo{
+		Name:        body.Name,
+		Description: body.Description,
+	}
+}
