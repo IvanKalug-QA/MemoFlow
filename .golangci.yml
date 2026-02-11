@@ -1,0 +1,32 @@
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosimple
+    - unused
+    
+    - gofmt
+    - revive
+    
+    - gosec
+    
+    - bodyclose
+
+issues:
+  exclude-rules:
+    - linters:
+        - staticcheck
+      path: _test\.go$
+
+  exclude-dirs:
+    - vendor
+    - testdata
+    - .git
+    - node_modules
+
+run:
+  timeout: 5m
+  tests: true
