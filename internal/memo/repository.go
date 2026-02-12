@@ -21,3 +21,12 @@ func (repo *MemoRepository) Create(memo *Memo) (*Memo, error) {
 	}
 	return memo, nil
 }
+
+func (repo *MemoRepository) GetByID(id int) (*Memo, error) {
+	var memo Memo
+	result := repo.Database.DB.First(&memo, "id = ?", id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &memo, nil
+}

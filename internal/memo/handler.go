@@ -5,6 +5,7 @@ import (
 	"memoflow/pkg/req"
 	"memoflow/pkg/res"
 	"net/http"
+	"strconv"
 )
 
 type MemoHandlerDeps struct {
@@ -32,7 +33,17 @@ func (m *MemoHandler) Create() http.HandlerFunc {
 
 func (m *MemoHandler) Read() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Read")
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		memo, err := m.MemoResository.GetByID(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		res.Json(w, memo, http.StatusOK)
 	}
 }
 
@@ -51,7 +62,7 @@ func (m *MemoHandler) Delete() http.HandlerFunc {
 func NewMemoHandler(router *http.ServeMux, deps MemoHandlerDeps) {
 	handler := &MemoHandler{MemoResository: deps.MemoResository}
 	router.HandleFunc("POST /memo", handler.Create())
-	router.HandleFunc("GET /memo", handler.Read())
+	router.HandleFunc("GET /memo/{id}", handler.Read())
 	router.HandleFunc("DELETE /memo/{id}", handler.Delete())
 	router.HandleFunc("PATCH /memo/{id}", handler.Update())
 }
