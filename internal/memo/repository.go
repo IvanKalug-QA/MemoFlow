@@ -30,3 +30,11 @@ func (repo *MemoRepository) GetByID(id int) (*Memo, error) {
 	}
 	return &memo, nil
 }
+
+func (repo *MemoRepository) Update(memo *Memo) (*Memo, error) {
+	result := repo.Database.DB.Updates(memo)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return memo, nil
+}

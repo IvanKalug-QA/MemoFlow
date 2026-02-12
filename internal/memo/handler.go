@@ -6,6 +6,8 @@ import (
 	"memoflow/pkg/res"
 	"net/http"
 	"strconv"
+
+	"gorm.io/gorm"
 )
 
 type MemoHandlerDeps struct {
@@ -49,7 +51,25 @@ func (m *MemoHandler) Read() http.HandlerFunc {
 
 func (m *MemoHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Update")
+		body, err := req.HandleBody[MemoUpdateRequest](&w, r)
+		if err != nil {
+			return
+		}
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		memo, err := m.MemoResository.Update(&Memo{
+			Model:       gorm.Model{ID: uint(id)},
+			Name:        body.Name,
+			Description: body.Description,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		res.Json(w, memo, http.StatusOK)
 	}
 }
 
