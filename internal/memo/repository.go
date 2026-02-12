@@ -2,6 +2,8 @@ package memo
 
 import (
 	"memoflow/pkg/db"
+
+	"gorm.io/gorm/clause"
 )
 
 type MemoRepository struct {
@@ -32,7 +34,7 @@ func (repo *MemoRepository) GetByID(id int) (*Memo, error) {
 }
 
 func (repo *MemoRepository) Update(memo *Memo) (*Memo, error) {
-	result := repo.Database.DB.Updates(memo)
+	result := repo.Database.DB.Clauses(clause.Returning{}).Updates(memo)
 	if result.Error != nil {
 		return nil, result.Error
 	}
