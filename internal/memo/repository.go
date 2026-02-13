@@ -40,3 +40,11 @@ func (repo *MemoRepository) Update(memo *Memo) (*Memo, error) {
 	}
 	return memo, nil
 }
+
+func (repo *MemoRepository) Delete(id int) error {
+	result := repo.Database.DB.Delete(&Memo{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

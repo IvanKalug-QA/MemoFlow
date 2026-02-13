@@ -1,7 +1,6 @@
 package memo
 
 import (
-	"fmt"
 	"memoflow/pkg/req"
 	"memoflow/pkg/res"
 	"net/http"
@@ -75,7 +74,21 @@ func (m *MemoHandler) Update() http.HandlerFunc {
 
 func (m *MemoHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Delete")
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if _, err = m.MemoResository.GetByID(id); err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		err = m.MemoResository.Delete(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		res.Json(w, nil, 200)
 	}
 }
 
