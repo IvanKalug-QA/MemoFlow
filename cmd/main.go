@@ -5,6 +5,7 @@ import (
 	"memoflow/internal/auth"
 	"memoflow/internal/memo"
 	"memoflow/pkg/db"
+	"memoflow/pkg/middleware"
 	"net/http"
 )
 
@@ -14,7 +15,7 @@ func main() {
 	router := http.NewServeMux()
 	server := http.Server{
 		Addr:    config.Port.Name,
-		Handler: router,
+		Handler: middleware.Logging(router),
 	}
 
 	//Repository
