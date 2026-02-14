@@ -13,9 +13,16 @@ func main() {
 	config := configs.LoadConfig()
 	db := db.NewDb(config)
 	router := http.NewServeMux()
+
+	// Middlewares
+	stack := middleware.Chain(
+		middleware.CORS,
+		middleware.Logging,
+	)
+
 	server := http.Server{
 		Addr:    config.Port.Name,
-		Handler: middleware.CORS(middleware.Logging(router)),
+		Handler: stack(router),
 	}
 
 	//Repository
