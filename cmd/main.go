@@ -15,7 +15,7 @@ func main() {
 	router := http.NewServeMux()
 	server := http.Server{
 		Addr:    config.Port.Name,
-		Handler: middleware.Logging(router),
+		Handler: middleware.CORS(middleware.Logging(router)),
 	}
 
 	//Repository
