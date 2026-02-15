@@ -2,6 +2,7 @@ package main
 
 import (
 	"memoflow/internal/memo"
+	"memoflow/internal/user"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -18,5 +19,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&memo.Memo{})
+	db.AutoMigrate(&memo.Memo{}, &user.User{})
 }
