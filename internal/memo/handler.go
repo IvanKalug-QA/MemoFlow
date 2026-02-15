@@ -1,6 +1,7 @@
 package memo
 
 import (
+	"memoflow/pkg/middleware"
 	"memoflow/pkg/req"
 	"memoflow/pkg/res"
 	"net/http"
@@ -97,5 +98,5 @@ func NewMemoHandler(router *http.ServeMux, deps MemoHandlerDeps) {
 	router.HandleFunc("POST /memo", handler.Create())
 	router.HandleFunc("GET /memo/{id}", handler.Read())
 	router.HandleFunc("DELETE /memo/{id}", handler.Delete())
-	router.HandleFunc("PATCH /memo/{id}", handler.Update())
+	router.Handle("PATCH /memo/{id}", middleware.IsAuthed(handler.Update()))
 }
