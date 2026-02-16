@@ -3,6 +3,8 @@ package auth
 import (
 	"errors"
 	"memoflow/internal/user"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func NewAuthService(userRepository *user.UserRepository) *AuthService {
@@ -18,12 +20,16 @@ func (a *AuthService) Register(email, password, username string) (string, error)
 	if existedUser != nil {
 		return "", errors.New(ErrUserExists)
 	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
 	user := &user.User{
 		Username: username,
 		Email:    email,
-		Password: "",
+		Password: string(hashedPassword),
 	}
-	_, err := a.UserRepository.Create(user)
+	_, err = a.UserRepository.Create(user)
 	if err != nil {
 		return "", err
 	}
