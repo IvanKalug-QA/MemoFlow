@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"memoflow/configs"
 	"memoflow/pkg/req"
 	"memoflow/pkg/res"
@@ -20,14 +19,16 @@ type AuthHandler struct {
 
 func (a *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Login")
 		var payload, err = req.HandleBody[LoginRequest](&w, r)
 		if err != nil {
 			return
 		}
-		fmt.Println(payload)
-		data := LoginResponse{Token: a.Auth.Secret}
-		res.Json(w, data, http.StatusOK)
+		err = a.AuthService.Login(payload.Email, payload.Password)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		res.Json(w, "ok", http.StatusOK)
 	}
 }
 
