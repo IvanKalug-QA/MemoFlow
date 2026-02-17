@@ -35,7 +35,7 @@ func LoadConfig() *Config {
 			Name: os.Getenv("PORT"),
 		},
 		Auth: AuthConfig{
-			Secret: os.Getenv("TOKEN"),
+			Secret: os.Getenv("SECRET"),
 		},
 		Db: DbConfig{
 			Dsn: os.Getenv("DSN"),

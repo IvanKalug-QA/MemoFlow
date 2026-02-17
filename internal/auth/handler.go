@@ -2,6 +2,7 @@ package auth
 
 import (
 	"memoflow/configs"
+	"memoflow/pkg/jwt"
 	"memoflow/pkg/req"
 	"memoflow/pkg/res"
 	"net/http"
@@ -25,10 +26,17 @@ func (a *AuthHandler) Login() http.HandlerFunc {
 		}
 		err = a.AuthService.Login(payload.Email, payload.Password)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		res.Json(w, "ok", http.StatusOK)
+		jwt := jwt.NewJWT(a.Auth.Secret)
+		token, err := jwt.Create(payload.Email)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		loginResponse := LoginResponse{Token: token}
+		res.Json(w, loginResponse, http.StatusOK)
 	}
 }
 
@@ -38,7 +46,19 @@ func (a *AuthHandler) Register() http.HandlerFunc {
 		if err != nil {
 			return
 		}
-		a.AuthService.Register(body.Email, body.Password, body.Username)
+		email, err := a.AuthService.Register(body.Email, body.Password, body.Username)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		jwt := jwt.NewJWT(a.Auth.Secret)
+		token, err := jwt.Create(email)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		registerResponse := RegisterResponse{Token: token}
+		res.Json(w, registerResponse, http.StatusOK)
 	}
 }
 
