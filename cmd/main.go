@@ -38,7 +38,10 @@ func main() {
 		Config:      config,
 		AuthService: authService,
 	})
-	memo.NewMemoHandler(router, memo.MemoHandlerDeps{MemoResository: memoRepository})
+	memo.NewMemoHandler(router, memo.MemoHandlerDeps{
+		MemoResository: memoRepository,
+		Config:         config,
+	})
 
 	server.ListenAndServe()
 }

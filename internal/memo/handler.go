@@ -1,6 +1,7 @@
 package memo
 
 import (
+	"memoflow/configs"
 	"memoflow/pkg/middleware"
 	"memoflow/pkg/req"
 	"memoflow/pkg/res"
@@ -12,6 +13,7 @@ import (
 
 type MemoHandlerDeps struct {
 	MemoResository *MemoRepository
+	Config         *configs.Config
 }
 
 type MemoHandler struct {
@@ -98,5 +100,5 @@ func NewMemoHandler(router *http.ServeMux, deps MemoHandlerDeps) {
 	router.HandleFunc("POST /memo", handler.Create())
 	router.HandleFunc("GET /memo/{id}", handler.Read())
 	router.HandleFunc("DELETE /memo/{id}", handler.Delete())
-	router.Handle("PATCH /memo/{id}", middleware.IsAuthed(handler.Update()))
+	router.Handle("PATCH /memo/{id}", middleware.IsAuthed(handler.Update(), deps.Config))
 }

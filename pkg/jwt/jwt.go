@@ -10,17 +10,32 @@ func NewJWT(secret string) *JWT {
 	}
 }
 
+type JWTData struct {
+	Email string
+}
+
 type JWT struct {
 	Secret string
 }
 
-func (j *JWT) Create(email string) (string, error) {
+func (j *JWT) Create(data JWTData) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": email,
+		"email": data.Email,
 	})
 	s, err := t.SignedString([]byte(j.Secret))
 	if err != nil {
 		return "", err
 	}
 	return s, nil
+}
+
+func (j *JWT) Parse(token string) (bool, *JWTData) {
+	t, err := jwt.Parse(token, func(t *jwt.Token) (any, error) {
+		return []byte(j.Secret), nil
+	})
+	if err != nil {
+		return false, nil
+	}
+	email := t.Claims.(jwt.MapClaims)["email"]
+	return t.Valid, &JWTData{Email: email.(string)}
 }
