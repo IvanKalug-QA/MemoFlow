@@ -2,6 +2,7 @@ package main
 
 import (
 	"memoflow/internal/memo"
+	"memoflow/internal/stat"
 	"memoflow/internal/user"
 	"os"
 
@@ -19,5 +20,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&memo.Memo{}, &user.User{})
+	db.AutoMigrate(&memo.Memo{}, &user.User{}, &stat.Stat{})
 }
