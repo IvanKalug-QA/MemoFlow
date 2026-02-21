@@ -95,10 +95,21 @@ func (m *MemoHandler) Delete() http.HandlerFunc {
 	}
 }
 
+func (m *MemoHandler) GetAll() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+}
+
 func NewMemoHandler(router *http.ServeMux, deps MemoHandlerDeps) {
 	handler := &MemoHandler{MemoResository: deps.MemoResository}
 	router.HandleFunc("POST /memo", handler.Create())
 	router.HandleFunc("GET /memo/{id}", handler.Read())
+	router.HandleFunc("GET /memo", handler.GetAll())
 	router.HandleFunc("DELETE /memo/{id}", handler.Delete())
 	router.Handle("PATCH /memo/{id}", middleware.IsAuthed(handler.Update(), deps.Config))
 }
