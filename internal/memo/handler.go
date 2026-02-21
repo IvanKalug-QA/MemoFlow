@@ -102,6 +102,21 @@ func (m *MemoHandler) GetAll() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		offset, err := strconv.Atoi(r.URL.Query().Get("offset"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		memos := m.MemoResository.GetAll(limit, offset)
+		count := m.MemoResository.Count()
+		res.Json(
+			w,
+			GetAllMemosResponse{
+				Memos: memos,
+				Count: count,
+			},
+			http.StatusOK,
+		)
 	}
 }
 

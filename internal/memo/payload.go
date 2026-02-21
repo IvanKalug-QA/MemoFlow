@@ -9,3 +9,8 @@ type MemoUpdateRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+type GetAllMemosResponse struct {
+	Memos []Memo `json:"memos"`
+	Count int64  `json:"count"`
+}
