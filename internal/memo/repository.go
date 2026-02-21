@@ -49,7 +49,13 @@ func (repo *MemoRepository) Delete(id int) error {
 	return nil
 }
 
-func (repo *MemoRepository) GetMemos(limit, offset int) []Memo {
+func (repo *MemoRepository) Count() int64 {
+	var count int64
+	repo.Database.Table("memos").Where("deleted_at is null").Count(&count)
+	return count
+}
+
+func (repo *MemoRepository) GetAll(limit, offset int) []Memo {
 	var memos []Memo
 
 	repo.Database.Table("memos").Where("deleted_at is null").Order("id asc").Limit(limit).Offset(offset).Scan(&memos)
