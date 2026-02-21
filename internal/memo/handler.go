@@ -2,6 +2,7 @@ package memo
 
 import (
 	"memoflow/configs"
+	"memoflow/internal/stat"
 	"memoflow/pkg/middleware"
 	"memoflow/pkg/req"
 	"memoflow/pkg/res"
@@ -13,11 +14,13 @@ import (
 
 type MemoHandlerDeps struct {
 	MemoResository *MemoRepository
+	StatRepository *stat.StatRepository
 	Config         *configs.Config
 }
 
 type MemoHandler struct {
 	MemoResository *MemoRepository
+	StatRepository *stat.StatRepository
 }
 
 func (m *MemoHandler) Create() http.HandlerFunc {
@@ -47,6 +50,7 @@ func (m *MemoHandler) Read() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
+		m.StatRepository.AddClick(memo.ID)
 		res.Json(w, memo, http.StatusOK)
 	}
 }
@@ -121,7 +125,7 @@ func (m *MemoHandler) GetAll() http.HandlerFunc {
 }
 
 func NewMemoHandler(router *http.ServeMux, deps MemoHandlerDeps) {
-	handler := &MemoHandler{MemoResository: deps.MemoResository}
+	handler := &MemoHandler{MemoResository: deps.MemoResository, StatRepository: deps.StatRepository}
 	router.HandleFunc("POST /memo", handler.Create())
 	router.HandleFunc("GET /memo/{id}", handler.Read())
 	router.HandleFunc("GET /memo", handler.GetAll())

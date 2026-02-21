@@ -4,6 +4,7 @@ import (
 	"memoflow/configs"
 	"memoflow/internal/auth"
 	"memoflow/internal/memo"
+	"memoflow/internal/stat"
 	"memoflow/internal/user"
 	"memoflow/pkg/db"
 	"memoflow/pkg/middleware"
@@ -29,6 +30,7 @@ func main() {
 	// Repository
 	memoRepository := memo.NewMemoRepository(db)
 	userRepository := user.NewUserRepository(db)
+	statRepository := stat.NewStatRepository(db)
 
 	// Services
 	authService := auth.NewAuthService(userRepository)
@@ -40,6 +42,7 @@ func main() {
 	})
 	memo.NewMemoHandler(router, memo.MemoHandlerDeps{
 		MemoResository: memoRepository,
+		StatRepository: statRepository,
 		Config:         config,
 	})
 
