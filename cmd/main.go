@@ -7,6 +7,7 @@ import (
 	"memoflow/internal/stat"
 	"memoflow/internal/user"
 	"memoflow/pkg/db"
+	"memoflow/pkg/event"
 	"memoflow/pkg/middleware"
 	"net/http"
 )
@@ -15,6 +16,7 @@ func main() {
 	config := configs.LoadConfig()
 	db := db.NewDb(config)
 	router := http.NewServeMux()
+	eventBus := event.NewEventBus()
 
 	// Middlewares
 	stack := middleware.Chain(
@@ -34,6 +36,10 @@ func main() {
 
 	// Services
 	authService := auth.NewAuthService(userRepository)
+	statService := stat.NewStatService(&stat.StatServiceDeps{
+		EventBus:       eventBus,
+		StatRepository: statRepository,
+	})
 
 	// Handlers
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
@@ -42,9 +48,10 @@ func main() {
 	})
 	memo.NewMemoHandler(router, memo.MemoHandlerDeps{
 		MemoResository: memoRepository,
-		StatRepository: statRepository,
+		EventBus:       eventBus,
 		Config:         config,
 	})
 
+	go statService.AddClick()
 	server.ListenAndServe()
 }
