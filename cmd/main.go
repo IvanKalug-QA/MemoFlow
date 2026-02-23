@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func App() http.Handler {
 	config := configs.LoadConfig()
 	db := db.NewDb(config)
 	router := http.NewServeMux()
@@ -23,11 +23,6 @@ func main() {
 		middleware.CORS,
 		middleware.Logging,
 	)
-
-	server := http.Server{
-		Addr:    config.Port.Name,
-		Handler: stack(router),
-	}
 
 	// Repository
 	memoRepository := memo.NewMemoRepository(db)
@@ -57,5 +52,16 @@ func main() {
 	})
 
 	go statService.AddClick()
+	return stack(router)
+}
+
+func main() {
+	app := App()
+
+	server := http.Server{
+		Addr:    ":8080",
+		Handler: app,
+	}
+
 	server.ListenAndServe()
 }
