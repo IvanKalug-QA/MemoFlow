@@ -1,15 +1,15 @@
 package stat
 
 import (
-	"fmt"
 	"memoflow/configs"
+	"memoflow/pkg/res"
 	"net/http"
 	"time"
 )
 
 const (
-	FilterByDay   = "day"
-	FilterByMonth = "month"
+	GroupByDay   = "day"
+	GroupByMonth = "month"
 )
 
 func NewStatHandler(router *http.ServeMux, deps StatHandlerDeps) {
@@ -42,11 +42,12 @@ func (s *StatHandler) GetStat() http.HandlerFunc {
 			http.Error(w, "Invalid to parametr", http.StatusBadRequest)
 			return
 		}
-		by := r.URL.Query().Get("to")
-		if by != FilterByDay && by != FilterByMonth {
+		by := r.URL.Query().Get("by")
+		if by != GroupByDay && by != GroupByMonth {
 			http.Error(w, "Invalid by parametr", http.StatusBadRequest)
 			return
 		}
-		fmt.Println(from, to)
+		stats := s.StatRepository.GetStats(by, from, to)
+		res.Json(w, stats, http.StatusOK)
 	}
 }
