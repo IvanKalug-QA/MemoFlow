@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"memoflow/internal/auth"
+	"memoflow/internal/user"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,7 +17,7 @@ import (
 )
 
 func initDb() *gorm.DB {
-	err := godotenv.Load("cmd/.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		panic(err)
 	}
@@ -27,9 +28,18 @@ func initDb() *gorm.DB {
 	return db
 }
 
+func initData(db *gorm.DB) {
+	db.Create(&user.User{
+		Email:    "user@mail.ru",
+		Password: "$2a$10$yoVd4mPFxg62HrIO4zdvq.JZ0WYqameV56XNh3Qvrwz3oFqE1MMG2",
+		Username: "Vasya",
+	})
+}
+
 func TestLoginSuccess(t *testing.T) {
 	// Prepare
 	db := initDb()
+	initData(db)
 
 	ts := httptest.NewServer(App())
 	defer ts.Close()
