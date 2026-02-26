@@ -2,6 +2,7 @@ package stat
 
 import (
 	"memoflow/configs"
+	"memoflow/pkg/middleware"
 	"memoflow/pkg/res"
 	"net/http"
 	"time"
@@ -17,7 +18,7 @@ func NewStatHandler(router *http.ServeMux, deps StatHandlerDeps) {
 		StatRepository: deps.StatRepository,
 		Config:         deps.Config,
 	}
-	router.HandleFunc("/stat", handler.GetStat())
+	router.Handle("/stat", middleware.IsAuthed(handler.GetStat(), deps.Config))
 }
 
 type StatHandlerDeps struct {

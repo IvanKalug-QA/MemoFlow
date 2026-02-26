@@ -129,9 +129,9 @@ func (m *MemoHandler) GetAll() http.HandlerFunc {
 
 func NewMemoHandler(router *http.ServeMux, deps MemoHandlerDeps) {
 	handler := &MemoHandler{MemoResository: deps.MemoResository, EventBus: deps.EventBus}
-	router.HandleFunc("POST /memo", handler.Create())
-	router.HandleFunc("GET /memo/{id}", handler.Read())
-	router.HandleFunc("GET /memo", handler.GetAll())
-	router.HandleFunc("DELETE /memo/{id}", handler.Delete())
+	router.Handle("POST /memo", middleware.IsAuthed(handler.Create(), deps.Config))
+	router.Handle("GET /memo/{id}", middleware.IsAuthed(handler.Read(), deps.Config))
+	router.Handle("GET /memo", middleware.IsAuthed(handler.GetAll(), deps.Config))
+	router.Handle("DELETE /memo/{id}", middleware.IsAuthed(handler.Delete(), deps.Config))
 	router.Handle("PATCH /memo/{id}", middleware.IsAuthed(handler.Update(), deps.Config))
 }
