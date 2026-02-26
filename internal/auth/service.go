@@ -3,16 +3,17 @@ package auth
 import (
 	"errors"
 	"memoflow/internal/user"
+	"memoflow/pkg/di"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func NewAuthService(userRepository *user.UserRepository) *AuthService {
+func NewAuthService(userRepository di.IUserRepository) *AuthService {
 	return &AuthService{UserRepository: userRepository}
 }
 
 type AuthService struct {
-	UserRepository *user.UserRepository
+	UserRepository di.IUserRepository
 }
 
 func (a *AuthService) Register(email, password, username string) (string, error) {
